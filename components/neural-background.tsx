@@ -59,7 +59,7 @@ export function NeuralBackground() {
       canvas.width = Math.round(width * pixelRatio);
       canvas.height = Math.round(height * pixelRatio);
       scale = Math.max(width / imageWidth, height / imageHeight);
-      left = (width - imageWidth * scale) * (narrowScreen.matches ? 0.65 : 0.5);
+      left = (width - imageWidth * scale) * (narrowScreen.matches ? 0.78 : 0.5);
       top = (height - imageHeight * scale) * (narrowScreen.matches ? 0.5 : 0.52);
     }
 
@@ -71,36 +71,41 @@ export function NeuralBackground() {
 
       for (const { points, duration, delay } of branches) {
         const elapsed = now - started - delay;
-        const progress = (elapsed % (duration + 850)) / duration;
+        const progress = (elapsed % (duration + 440)) / duration;
         if (progress < 0 || progress > 1) continue;
 
         const intensity = Math.min(progress * 9, (1 - progress) * 9, 1);
         const [headX, headY] = pointOnBranch(points, progress);
-        const [tailX, tailY] = pointOnBranch(points, Math.max(0, progress - 0.19));
+        const [tailX, tailY] = pointOnBranch(points, Math.max(0, progress - 0.27));
         const trail = context.createLinearGradient(tailX, tailY, headX, headY);
         trail.addColorStop(0, "#2ca5ff00");
-        trail.addColorStop(0.58, "#198bff");
+        trail.addColorStop(0.42, "#168bff");
+        trail.addColorStop(0.78, "#91edff");
         trail.addColorStop(1, "#ecfbff");
 
         context.globalAlpha = intensity;
         context.shadowColor = "#28b8ff";
-        context.shadowBlur = 15 * pixelRatio;
+        context.shadowBlur = 26 * pixelRatio;
         context.strokeStyle = trail;
-        context.lineWidth = 2.8;
+        context.lineWidth = 11;
         context.lineJoin = "round";
         context.beginPath();
         context.moveTo(tailX, tailY);
         for (let segment = 8; segment >= 0; segment--) {
-          const [x, y] = pointOnBranch(points, Math.max(0, progress - segment * 0.021));
+          const [x, y] = pointOnBranch(points, Math.max(0, progress - segment * 0.031));
           const jitter = segment === 0 ? 0 : Math.sin(segment * 3.9 + now * 0.016) * 5;
           context.lineTo(x + jitter, y - jitter);
         }
+        context.globalAlpha = intensity * 0.46;
+        context.stroke();
+        context.globalAlpha = intensity;
+        context.lineWidth = 5.5;
         context.stroke();
 
         const [forkX, forkY] = pointOnBranch(points, Math.max(0, progress - 0.045));
-        const arc = Math.sin(now * 0.009 + delay) * 13;
+        const arc = Math.sin(now * 0.009 + delay) * 19;
         context.globalAlpha = intensity * 0.68;
-        context.lineWidth = 1.4;
+        context.lineWidth = 2.7;
         context.beginPath();
         context.moveTo(forkX, forkY);
         context.lineTo(forkX + 9, forkY + arc);
@@ -110,7 +115,7 @@ export function NeuralBackground() {
         context.globalAlpha = intensity;
         context.fillStyle = "#ecfbff";
         context.beginPath();
-        context.arc(headX, headY, 3.5, 0, Math.PI * 2);
+        context.arc(headX, headY, 6.5, 0, Math.PI * 2);
         context.fill();
       }
       frame = requestAnimationFrame(draw);
