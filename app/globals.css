@@ -53,18 +53,26 @@ nav { display: flex; gap: clamp(16px, 3vw, 38px); font-size: 14px; }
   background: linear-gradient(90deg, #030a1bf5 0%, #030a1be0 30%, #030a1b80 52%, #030a1b12 80%),
     linear-gradient(0deg, #030a1b80, transparent 24%);
 }
-.neural-signal {
+.neural-signal { position: absolute; inset: 0; width: 100%; height: 100%; }
+.neural-motion-control {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse 14% 22% at 72% 42%, #61cffe24, transparent 85%),
-    radial-gradient(ellipse 11% 18% at 89% 64%, #307bfe32, transparent 85%);
-  opacity: 0;
-  animation: neural-fire 4.6s ease-out both;
+  z-index: 1;
+  right: clamp(16px, 3vw, 44px);
+  bottom: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  min-height: 44px;
+  border: 1px solid #93d2fb70;
+  border-radius: 100px;
+  background: #030a1bd9;
+  color: #deefff;
+  font-size: 12px;
+  cursor: pointer;
 }
-@keyframes neural-fire {
-  0%, 26%, 63%, 100% { opacity: 0; }
-  20%, 54%, 77% { opacity: .85; }
-}
+.neural-motion-control:hover { background: #102942; }
+.neural-motion-control:focus-visible { outline: 2px solid #a7e1ff; outline-offset: 3px; }
 .eyebrow { font-weight: 700; font-size: 11px; letter-spacing: .17em; }
 .hero .eyebrow { color: #a7e1ff; display: flex; align-items: center; gap: 9px; }
 .hero .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: #a7e1ff; }
@@ -149,6 +157,7 @@ input:focus-visible { outline: 2px solid #326957; outline-offset: 2px; }
 }
 @media (max-width: 480px) { .form-fields { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
-  .hero-copy, .neural-signal { animation: none; }
+  .hero-copy { animation: none; }
+  .neural-motion-control { display: none; }
   .community-links > a { transition: none; }
 }

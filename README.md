@@ -16,7 +16,7 @@ npm run build
 The homepage uses the shadcn/ui button registry component. The institute assets are stored locally. The [institute’s off-campus access page](https://idp.niperrbl.ac.in/) displays the source emblem.
 
 - [Institute emblem](https://idp.niperrbl.ac.in/public/assets/images/logo.png), used in the header, footer and favicon.
-- The hero uses an original neural-network illustration with a short blue firing effect. Reduced-motion settings disable the effect.
+- The hero uses an original neural-network illustration with animated blue signals that follow the illustrated branches. Visitors can pause the animation, and reduced-motion settings disable it.
 
 The supplied Octopod collection is for donations. Paid membership requires an approved fee, billing interval and a separate checkout. Member accounts and the private directory are planned application phases.
 

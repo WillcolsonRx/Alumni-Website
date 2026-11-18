@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, ArrowUpRight, HeartHandshake, Mail } from "lucide-react";
+import { NeuralBackground } from "@/components/neural-background";
 import { Membership } from "@/components/membership";
 import { Button } from "@/components/ui/button";
 
@@ -28,10 +29,7 @@ export default function Home() {
       </header>
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="neural-background" aria-hidden="true">
-            <Image src="/neural-connections.webp" alt="" fill preload sizes="100vw" />
-            <div className="neural-signal" />
-          </div>
+          <NeuralBackground />
           <div className="shell hero-content">
             <div className="hero-copy">
               <p className="eyebrow"><span /> NIPER-RAEBARELI ALUMNI</p>
