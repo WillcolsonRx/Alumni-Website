@@ -13,11 +13,10 @@ npm run lint
 npm run build
 ```
 
-The homepage uses the shadcn/ui button registry component. The institute assets are stored locally. The [institute’s off-campus access page](https://idp.niperrbl.ac.in/) displays both source files.
+The homepage uses the shadcn/ui button registry component. The institute assets are stored locally. The [institute’s off-campus access page](https://idp.niperrbl.ac.in/) displays the source emblem.
 
 - [Institute emblem](https://idp.niperrbl.ac.in/public/assets/images/logo.png), used in the header, footer and favicon.
-- [Institute entrance photograph](https://idp.niperrbl.ac.in/public/assets/images/slides/img1.jpg), shown at a modest size because the source is 275 × 183.
-- The orbital illustration is original CSS 3D artwork. Pointer tilt and entrance animation respect reduced-motion settings.
+- The hero uses an original neural-network illustration with a short blue firing effect. Reduced-motion settings disable the effect.
 
 The supplied Octopod collection is for donations. Paid membership requires an approved fee, billing interval and a separate checkout. Member accounts and the private directory are planned application phases.
 

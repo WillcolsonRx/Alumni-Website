@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, ArrowUpRight, HeartHandshake, Mail } from "lucide-react";
 import { Membership } from "@/components/membership";
-import { InstituteVisual } from "@/components/institute-visual";
 import { Button } from "@/components/ui/button";
 
 const octopodUrl = "https://octopod.co.in/payment/collection/4d3a15f6163b1698fead635013807d18/6ac464f5ce0b911f9fee314680d8b66c";
@@ -29,7 +28,11 @@ export default function Home() {
       </header>
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
-          <div className="shell hero-grid">
+          <div className="neural-background" aria-hidden="true">
+            <Image src="/neural-connections.webp" alt="" fill preload sizes="100vw" />
+            <div className="neural-signal" />
+          </div>
+          <div className="shell hero-content">
             <div className="hero-copy">
               <p className="eyebrow"><span /> NIPER-RAEBARELI ALUMNI</p>
               <h1 id="hero-title">Your NIPER story <em>continues here.</em></h1>
@@ -39,7 +42,6 @@ export default function Home() {
                 <a className="quiet" href="#community">Explore the association <ArrowDown size={16} aria-hidden="true" /></a>
               </div>
             </div>
-            <InstituteVisual />
           </div>
         </section>
 
