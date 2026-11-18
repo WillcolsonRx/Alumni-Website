@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Pause, Play } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 const imageWidth = 1536;
 const imageHeight = 1024;
@@ -31,12 +30,11 @@ function pointOnBranch(points: number[], progress: number) {
 
 export function NeuralBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
-    if (!canvas || !context || paused) return;
+    if (!canvas || !context) return;
 
     const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
     const narrowScreen = matchMedia("(max-width: 800px)");
@@ -77,16 +75,43 @@ export function NeuralBackground() {
         if (progress < 0 || progress > 1) continue;
 
         const intensity = Math.min(progress * 9, (1 - progress) * 9, 1);
+        const [headX, headY] = pointOnBranch(points, progress);
+        const [tailX, tailY] = pointOnBranch(points, Math.max(0, progress - 0.19));
+        const trail = context.createLinearGradient(tailX, tailY, headX, headY);
+        trail.addColorStop(0, "#2ca5ff00");
+        trail.addColorStop(0.58, "#198bff");
+        trail.addColorStop(1, "#ecfbff");
+
+        context.globalAlpha = intensity;
+        context.shadowColor = "#28b8ff";
+        context.shadowBlur = 15 * pixelRatio;
+        context.strokeStyle = trail;
+        context.lineWidth = 2.8;
+        context.lineJoin = "round";
+        context.beginPath();
+        context.moveTo(tailX, tailY);
         for (let segment = 8; segment >= 0; segment--) {
-          const [x, y] = pointOnBranch(points, Math.max(0, progress - segment * 0.011));
-          context.globalAlpha = intensity * (1 - segment / 9);
-          context.fillStyle = segment === 0 ? "#ecfbff" : "#54cfff";
-          context.shadowColor = "#32b8ff";
-          context.shadowBlur = segment === 0 ? 16 * pixelRatio : 7 * pixelRatio;
-          context.beginPath();
-          context.arc(x, y, segment === 0 ? 4.5 : 3, 0, Math.PI * 2);
-          context.fill();
+          const [x, y] = pointOnBranch(points, Math.max(0, progress - segment * 0.021));
+          const jitter = segment === 0 ? 0 : Math.sin(segment * 3.9 + now * 0.016) * 5;
+          context.lineTo(x + jitter, y - jitter);
         }
+        context.stroke();
+
+        const [forkX, forkY] = pointOnBranch(points, Math.max(0, progress - 0.045));
+        const arc = Math.sin(now * 0.009 + delay) * 13;
+        context.globalAlpha = intensity * 0.68;
+        context.lineWidth = 1.4;
+        context.beginPath();
+        context.moveTo(forkX, forkY);
+        context.lineTo(forkX + 9, forkY + arc);
+        context.lineTo(forkX + 19, forkY + arc * 1.8 - 5);
+        context.stroke();
+
+        context.globalAlpha = intensity;
+        context.fillStyle = "#ecfbff";
+        context.beginPath();
+        context.arc(headX, headY, 3.5, 0, Math.PI * 2);
+        context.fill();
       }
       frame = requestAnimationFrame(draw);
     }
@@ -119,18 +144,12 @@ export function NeuralBackground() {
       document.removeEventListener("visibilitychange", sync);
       clear();
     };
-  }, [paused]);
+  }, []);
 
   return (
-    <>
-      <div className="neural-background" aria-hidden="true">
-        <Image src="/neural-connections.webp" alt="" fill preload sizes="100vw" />
-        <canvas ref={canvasRef} className="neural-signal" />
-      </div>
-      <button className="neural-motion-control" type="button" onClick={() => setPaused(!paused)}>
-        {paused ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}
-        {paused ? "Play animation" : "Pause animation"}
-      </button>
-    </>
+    <div className="neural-background" aria-hidden="true">
+      <Image src="/neural-connections.webp" alt="" fill preload sizes="100vw" />
+      <canvas ref={canvasRef} className="neural-signal" />
+    </div>
   );
 }

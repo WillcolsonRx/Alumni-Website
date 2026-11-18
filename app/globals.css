@@ -54,25 +54,6 @@ nav { display: flex; gap: clamp(16px, 3vw, 38px); font-size: 14px; }
     linear-gradient(0deg, #030a1b80, transparent 24%);
 }
 .neural-signal { position: absolute; inset: 0; width: 100%; height: 100%; }
-.neural-motion-control {
-  position: absolute;
-  z-index: 1;
-  right: clamp(16px, 3vw, 44px);
-  bottom: 14px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 13px;
-  min-height: 44px;
-  border: 1px solid #93d2fb70;
-  border-radius: 100px;
-  background: #030a1bd9;
-  color: #deefff;
-  font-size: 12px;
-  cursor: pointer;
-}
-.neural-motion-control:hover { background: #102942; }
-.neural-motion-control:focus-visible { outline: 2px solid #a7e1ff; outline-offset: 3px; }
 .eyebrow { font-weight: 700; font-size: 11px; letter-spacing: .17em; }
 .hero .eyebrow { color: #a7e1ff; display: flex; align-items: center; gap: 9px; }
 .hero .eyebrow span { width: 7px; height: 7px; border-radius: 50%; background: #a7e1ff; }
@@ -158,6 +139,39 @@ input:focus-visible { outline: 2px solid #326957; outline-offset: 2px; }
 @media (max-width: 480px) { .form-fields { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
   .hero-copy { animation: none; }
-  .neural-motion-control { display: none; }
   .community-links > a { transition: none; }
+}
+
+
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: url("/cursor-electric.png") 3 3, auto; }
+  a[href], button:enabled { cursor: url("/cursor-lightning.png") 16 2, pointer; }
+  nav a, .header-join {
+    position: relative;
+    isolation: isolate;
+  }
+  nav a::after, .header-join::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    left: 1%;
+    right: 1%;
+    bottom: -6px;
+    height: 8px;
+    opacity: 0;
+    background: linear-gradient(90deg, #168bd000, #29abff 24%, #e6fbff 53%, #29abff 80%, #168bd000);
+    clip-path: polygon(0 68%, 20% 40%, 35% 68%, 49% 12%, 61% 58%, 78% 34%, 100% 70%, 100% 91%, 78% 58%, 61% 82%, 49% 39%, 35% 94%, 20% 64%, 0 91%);
+  }
+  nav a:hover::after, .header-join:hover::after {
+    opacity: 1;
+    animation: electric-link 850ms ease-in-out infinite alternate;
+  }
+  nav a:hover { color: #07548b; text-decoration: none; }
+}
+@keyframes electric-link {
+  from { transform: scaleX(.78) scaleY(.8); opacity: .65; }
+  to { transform: scaleX(1) scaleY(1.2); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  nav a:hover::after, .header-join:hover::after { animation: none; }
 }
