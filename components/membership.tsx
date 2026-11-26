@@ -1,6 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useRef } from "react";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { FEE_RUPEES } from "@/lib/registration.mjs";
 import { Button } from "@/components/ui/button";
@@ -33,7 +34,11 @@ export function Membership() {
       <div className="shell membership-grid">
         <div>
           <h2 id="membership-title">Join your alumni network.</h2>
-          <p>Pay exactly ₹6,000 by bank transfer, then submit your graduation details and a payment screenshot. Staff will verify the payment against the association’s bank records.</p>
+          <p>Pay exactly ₹6,000 using the payment QR code or the bank details below. Then submit your graduation details, transaction reference, and payment screenshot. Staff will verify the payment against the association’s bank records.</p>
+          <a href="/payment-qr.png" className="my-5 inline-flex max-w-full flex-col items-start gap-2 underline">
+            <Image src="/payment-qr.png" alt="HDFC payment QR code for NIPER Raebareli Alumni Association" width={410} height={415} className="h-auto w-64 max-w-full rounded-lg" />
+            <span>Open payment QR code</span>
+          </a>
           <dl className="payment-details">
             <div><dt>Beneficiary</dt><dd>NIPER Raebareli Alumni Association</dd></div>
             <div><dt>Bank</dt><dd>HDFC Bank</dd></div>
