@@ -50,6 +50,37 @@ function imageType(bytes) {
   return null;
 }
 
+async function sendReceipt(env, email, reference) {
+  if (!env.RESEND_API_KEY || !env.REGISTRATION_EMAIL_FROM) return;
+
+  const statusUrl = "https://niper-raebareli-alumni.niper-raebareli-alumni.workers.dev/#membership";
+  try {
+    const result = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": `alumni-registration/${reference}`,
+      },
+      body: JSON.stringify({
+        from: env.REGISTRATION_EMAIL_FROM,
+        to: [email],
+        subject: "NIPER Raebareli alumni registration received",
+        text: [
+          "We received your NIPER Raebareli Alumni Association registration.",
+          "Your registration is pending until staff verify your ₹6,000 payment.",
+          `Your private registration reference is ${reference}. Keep it for your records.`,
+          `To check your status, enter the reference at ${statusUrl}`,
+        ].join("\n\n"),
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!result.ok) console.error("Registration receipt email rejected", result.status);
+  } catch {
+    console.error("Registration receipt email request failed");
+  }
+}
+
 async function register(data, env, ctx) {
   const reference = field(data, "reference");
   const name = field(data, "name");
@@ -93,7 +124,10 @@ async function register(data, env, ctx) {
       (reference, name, email, programme, graduation_year, amount_paise, transaction_reference, screenshot_key)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING
   `).bind(reference, name, email, programme, year, FEE_RUPEES * 100, transaction, key).run();
-  if (result.meta.changes === 1) return response(statuses.pending, 201, { reference });
+  if (result.meta.changes === 1) {
+    ctx.waitUntil(sendReceipt(env, email, reference));
+    return response(statuses.pending, 201, { reference });
+  }
 
   ctx.waitUntil(env.SCREENSHOTS.delete(key).catch(() => console.error("Screenshot cleanup failed")));
   const existingAfterInsert = await findExisting();

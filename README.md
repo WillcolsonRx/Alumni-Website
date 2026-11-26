@@ -58,3 +58,23 @@ Once Vercel assigns the production URL, set `VERCEL_ORIGIN` under the top-level
 `vars` in `wrangler.jsonc` to its exact HTTPS origin, without a trailing slash,
 then redeploy the Worker. Verify status lookup from the Vercel production
 domain. Use the Cloudflare URL for registration until that check passes.
+
+## Registration receipt email
+
+The Worker uses [Resend](https://resend.com/docs/dashboard/domains/introduction)
+to send a receipt after it saves a new registration. The receipt includes the
+private status reference and explains that staff payment verification is pending.
+
+Verify a sending domain in Resend and create a sending API key. Set the following
+Worker secrets using the Cloudflare dashboard or Wrangler:
+
+```sh
+npx wrangler secret put RESEND_API_KEY
+npx wrangler secret put REGISTRATION_EMAIL_FROM
+```
+
+For the sender, enter an address on the verified domain, optionally in the format
+`NIPER Raebareli Alumni Association <registrations@example.org>`. Both settings
+are required to enable email. The Worker saves registrations even when email is
+disabled or the provider rejects a send. Delivery failures appear in Worker
+logs and the email provider dashboard.
