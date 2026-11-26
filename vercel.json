@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "npm run build",
+  "outputDirectory": "out",
+  "rewrites": [
+    {
+      "source": "/api/registrations",
+      "destination": "https://niper-raebareli-alumni.niper-raebareli-alumni.workers.dev/api/registrations"
+    },
+    {
+      "source": "/api/registration-status",
+      "destination": "https://niper-raebareli-alumni.niper-raebareli-alumni.workers.dev/api/registration-status"
+    }
+  ]
+}

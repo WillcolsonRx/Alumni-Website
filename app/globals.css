@@ -221,3 +221,34 @@ input:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   nav a:hover::after, .header-join:hover::after { animation: none; }
 }
+
+.payment-details {
+  margin-block: 1.5rem;
+}
+
+.payment-details div {
+  margin-block: 0.5rem;
+}
+
+.payment-details dt {
+  font-weight: 600;
+}
+
+.payment-details dd {
+  margin: 0;
+}
+
+.application-form fieldset {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.application-form input[type="file"] {
+  max-width: 100%;
+}
+
+.form-feedback code {
+  overflow-wrap: anywhere;
+}

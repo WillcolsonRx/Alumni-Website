@@ -1,42 +1,60 @@
 # NIPER-Raebareli Alumni Association
 
-The site includes an alumni application form, private status lookup, and the association’s hosted Octopod donation form.
+The site accepts alumni registrations after an applicant transfers exactly ₹6,000 to the association and uploads a payment screenshot. The Worker records the registration in D1 and the screenshot in private R2. Applicants can check their status using the private reference shown after submission.
 
-## Development
+## Local development
 
-Requires Node.js 24, as used during cloud development.
+Use Node.js 24.
 
 ```sh
 npm ci
-npm run dev
 npm run lint
 npm run build
+npx wrangler@4 d1 migrations apply REGISTRATIONS --local
+npx wrangler@4 dev --local
 ```
 
-The homepage uses the shadcn/ui button registry component. The institute assets are stored locally. The [institute’s off-campus access page](https://idp.niperrbl.ac.in/) displays the source emblem.
+Rebuild after changing the frontend. Wrangler serves the exported website and handles the registration API on the same origin.
 
-- [Institute emblem](https://idp.niperrbl.ac.in/public/assets/images/logo.png), used in the header, footer and favicon.
-- The hero uses an original neural-network illustration with animated blue signals that follow the illustrated branches. The animation loops while the hero is in view. Reduced-motion settings disable it.
+## Cloudflare deployment
 
-The supplied Octopod collection is for donations. Paid membership requires an approved fee, billing interval and a separate checkout. Member accounts and the private directory are planned application phases.
-
-## Membership applications
-
-Run with Node.js 24 on a machine with writable persistent disk. Applications are
-stored in `.data/applications.sqlite` by default. Set `ALUMNI_DB_PATH` to an
-absolute path on the chosen private volume. Keep this database out of version
-control and restrict filesystem access to authorized staff.
-
-On the same machine, with the same database path, authorized staff can list and
-review applications after checking the association’s records.
+`wrangler.jsonc` selects the association’s Cloudflare account. Bind `CLOUDFLARE_API_TOKEN` in the deployment environment. The token needs D1 Edit, Workers R2 Storage Edit, and Workers Scripts Edit for that account.
 
 ```sh
-node scripts/review-applications.mjs list
-node scripts/review-applications.mjs review <reference> verified
-node scripts/review-applications.mjs review <reference> declined
+npx wrangler@4 d1 create niper-alumni-registrations
+npx wrangler@4 r2 bucket create niper-alumni-payment-screenshots
 ```
 
-Applicants can check the result using their private reference. An application
-does not create an account. Public deployment requires a managed database,
-staff authentication, and mailbox verification. The local SQLite backend is
-disabled on Vercel because its runtime filesystem cannot retain applications.
+Create each resource only if it is absent. Set `database_id` in `wrangler.jsonc` to the real D1 UUID. In R2, leave Public Development URL and custom domains disabled. Configure a Workers subdomain for the account if one has not already been configured.
+
+```sh
+npm run build
+npx wrangler@4 d1 migrations apply REGISTRATIONS --remote
+npx wrangler@4 deploy
+```
+
+Verify the registration page and status endpoint on the deployed origin before routing the public site to this Worker. The legacy SQLite review script can still read any existing local applications using their original database path. Those applications have no payment proof and are outside the new registration flow.
+
+## Staff payment review
+
+Use an authorized Cloudflare identity. List pending registrations, then open each screenshot by its object key in the private R2 dashboard. Check the transaction reference and exact ₹6,000 credit in the association’s bank records before marking the registration verified. If the payment has not been confirmed and the review is still open, leave the registration pending.
+
+```sh
+node scripts/review-registrations.mjs list
+node scripts/review-registrations.mjs review <reference> verified
+node scripts/review-registrations.mjs review <reference> declined
+```
+
+Review commands change only pending registrations and store the review time. Keep the command output and screenshots within authorized staff access.
+
+## Vercel frontend
+
+Deploy this repository on Vercel using the settings in `vercel.json`. The static
+export serves the site and rewrites the two registration endpoints to the
+Cloudflare Worker. Keep the Cloudflare API token in the Worker deployment
+environment.
+
+Once Vercel assigns the production URL, set `VERCEL_ORIGIN` under the top-level
+`vars` in `wrangler.jsonc` to its exact HTTPS origin, without a trailing slash,
+then redeploy the Worker. Verify status lookup from the Vercel production
+domain. Use the Cloudflare URL for registration until that check passes.
