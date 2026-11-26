@@ -5,6 +5,9 @@
   "compatibility_date": "2026-11-26",
   "workers_dev": true,
   "preview_urls": false,
+  "vars": {
+    "VERCEL_ORIGIN": "https://niper-raebareli-alumni.vercel.app"
+  },
   "assets": {
     "directory": "./out",
     "binding": "ASSETS",
