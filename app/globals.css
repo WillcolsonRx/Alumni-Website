@@ -252,3 +252,33 @@ input:focus-visible { outline: 2px solid var(--ice); outline-offset: 2px; }
 .form-feedback code {
   overflow-wrap: anywhere;
 }
+
+.registration-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 20px;
+  padding: 0 0 15px;
+  list-style: none;
+}
+.registration-progress li { display: grid; justify-items: center; gap: 5px; color: var(--mist); font-size: clamp(11px, 1.3vw, 14px); }
+.registration-progress span {
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+}
+.registration-progress [aria-current="step"] { color: var(--ice); font-weight: 700; }
+.registration-progress [aria-current="step"] span { border-color: var(--ice); background: var(--ice); color: var(--night); }
+.registration-progress [data-complete="true"] span { border-color: var(--ice); color: var(--ice); }
+.registration-step-title { margin: 0 0 14px; font-size: 19px; }
+.registration-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.form-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.form-fields label { align-content: start; min-width: 0; }
+.form-wide { grid-column: 1 / -1; }
+.form-fee { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px; }
+.form-fee strong { color: var(--ice); font-size: 20px; }
+@media (max-width: 480px) { .form-fields { grid-template-columns: minmax(0, 1fr); } }

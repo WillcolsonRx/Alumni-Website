@@ -1,4 +1,4 @@
-import { FEE_RUPEES, GENDER_OPTIONS, MAX_PROFILE_PHOTO_BYTES, MAX_SCREENSHOT_BYTES } from "../lib/registration.mjs";
+import { FEE_LABEL, FEE_RUPEES, GENDER_OPTIONS, MAX_PROFILE_PHOTO_BYTES, MAX_SCREENSHOT_BYTES } from "../lib/registration.mjs";
 
 const referencePattern = /^[a-f0-9]{32}$/;
 const statuses = {
@@ -68,7 +68,7 @@ async function sendReceipt(env, email, reference) {
         subject: "NIPER Raebareli alumni registration received",
         text: [
           "We received your NIPER Raebareli Alumni Association registration.",
-          "Your registration is pending until staff verify your ₹6,000 payment.",
+          `Your registration is pending until staff verify your ${FEE_LABEL} payment.`,
           `Your private registration reference is ${reference}. Keep it for your records.`,
           `To check your status, enter the reference at ${statusUrl}`,
         ].join("\n\n"),
@@ -105,7 +105,7 @@ async function register(data, env, ctx) {
     return response("Check your graduation details, payment reference and consent.", 400);
   }
   if (field(data, "amount") !== String(FEE_RUPEES)) {
-    return response("Registration requires a payment of exactly ₹6,000.", 400);
+    return response(`Registration requires a payment of exactly ${FEE_LABEL}.`, 400);
   }
   if (!(screenshot instanceof File) || !screenshot.size || screenshot.size > MAX_SCREENSHOT_BYTES) {
     return response("Upload your payment screenshot as PNG or JPEG, up to 5 MB.", 400);

@@ -1,6 +1,6 @@
 # NIPER-Raebareli Alumni Association
 
-The site accepts alumni registrations after an applicant transfers exactly ₹6,000 to the association and uploads a payment screenshot. The Worker records the registration in D1 and the screenshot in private R2. Applicants can check their status using the private reference shown after submission.
+The site accepts alumni registrations after an applicant transfers exactly ₹5,900 to the association and uploads a payment screenshot. The Worker records the registration in D1 and the screenshot in private R2. Applicants can check their status using the private reference shown after submission.
 
 ## Local development
 
@@ -37,7 +37,7 @@ Verify the registration page and status endpoint on the deployed origin before r
 
 ## Staff payment review
 
-Use an authorized Cloudflare identity. List pending registrations, then open each screenshot by its object key in the private R2 dashboard. Check the transaction reference and exact ₹6,000 credit in the association’s bank records before marking the registration verified. If the payment has not been confirmed and the review is still open, leave the registration pending.
+Use an authorized Cloudflare identity. List pending registrations, then open each screenshot by its object key in the private R2 dashboard. Check the transaction reference and exact credit shown for that registration in the association’s bank records before marking the registration verified. If the payment has not been confirmed and the review is still open, leave the registration pending.
 
 ```sh
 node scripts/review-registrations.mjs list
