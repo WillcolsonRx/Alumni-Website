@@ -89,6 +89,13 @@ async function register(data, env, ctx) {
   const year = Number(field(data, "year"));
   const transaction = field(data, "transaction").toUpperCase();
   const screenshot = data.get("screenshot");
+  const phone = field(data, "phone");
+  const city = field(data, "city");
+  const country = field(data, "country");
+  const employer = field(data, "employer");
+  const jobTitle = field(data, "job_title");
+  const linkedinUrl = field(data, "linkedin_url");
+  const industry = field(data, "industry");
 
   if (!referencePattern.test(reference) || name.length < 2 || name.length > 120 ||
       email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
@@ -102,6 +109,20 @@ async function register(data, env, ctx) {
   }
   if (!(screenshot instanceof File) || !screenshot.size || screenshot.size > MAX_SCREENSHOT_BYTES) {
     return response("Upload your payment screenshot as PNG or JPEG, up to 5 MB.", 400);
+  }
+  const digits = phone.replace(/[^0-9]/g, "");
+  if (!/^\+[1-9][0-9 ().-]*$/.test(phone) || phone.length > 32 ||
+      digits.length < 7 || digits.length > 15) {
+    return response("Enter a phone number with the international country code.", 400);
+  }
+  if (!city || city.length > 120 || !country || country.length > 120 ||
+      !employer || employer.length > 160 || !jobTitle || jobTitle.length > 160 ||
+      industry.length > 120) {
+    return response("Check your location and professional details.", 400);
+  }
+  if (linkedinUrl && (linkedinUrl.length > 300 ||
+      !/^https:\/\/(?:[a-z0-9-]+\.)?linkedin\.com\/in\/[^\s/?#]+(?:[/?#][^\s]*)?$/i.test(linkedinUrl))) {
+    return response("Enter a valid LinkedIn profile URL starting with https://.", 400);
   }
   const bytes = await screenshot.arrayBuffer();
   const type = imageType(new Uint8Array(bytes, 0, Math.min(bytes.byteLength, 8)));
@@ -121,9 +142,11 @@ async function register(data, env, ctx) {
   // Keep the object if the database outcome is unknown. A committed row may use it.
   const result = await db.prepare(`
     INSERT INTO registrations
-      (reference, name, email, programme, graduation_year, amount_paise, transaction_reference, screenshot_key)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING
-  `).bind(reference, name, email, programme, year, FEE_RUPEES * 100, transaction, key).run();
+      (reference, name, email, programme, graduation_year, amount_paise, transaction_reference, screenshot_key,
+       phone, city, country, employer, job_title, linkedin_url, industry)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING
+  `).bind(reference, name, email, programme, year, FEE_RUPEES * 100, transaction, key,
+    phone, city, country, employer, jobTitle, linkedinUrl || null, industry || null).run();
   if (result.meta.changes === 1) {
     ctx.waitUntil(sendReceipt(env, email, reference));
     return response(statuses.pending, 201, { reference });

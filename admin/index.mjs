@@ -76,7 +76,8 @@ export default {
       const [counts, records] = await db.batch([
         db.prepare("SELECT status, COUNT(*) AS total FROM registrations GROUP BY status"),
         db.prepare(`SELECT reference, name, email, programme, graduation_year, transaction_reference,
-                    amount_paise, status, submitted_at, reviewed_at
+                    amount_paise, status, submitted_at, reviewed_at,
+                    phone, city, country, employer, job_title, linkedin_url, industry
                     FROM registrations
                     WHERE (?1 = '' OR status = ?1) AND
                           (?2 = '' OR instr(lower(name), lower(?2)) OR instr(lower(email), lower(?2))

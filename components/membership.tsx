@@ -66,11 +66,18 @@ export function Membership() {
               <label>Email address<input name="email" type="email" autoComplete="email" maxLength={254} required /></label>
               <label>Degree and specialisation<input name="programme" minLength={2} maxLength={120} required /></label>
               <label>Graduation year<input name="year" type="number" min={2008} required /></label>
+              <label>Phone number (with country code)<input name="phone" type="tel" autoComplete="tel" maxLength={32} placeholder="+91 98765 43210" required /></label>
+              <label>Current city<input name="city" autoComplete="address-level2" maxLength={120} required /></label>
+              <label>Current country<input name="country" autoComplete="country-name" maxLength={120} required /></label>
+              <label>Current employer or organization<input name="employer" autoComplete="organization" maxLength={160} required /><small>Enter “Not currently employed” if applicable.</small></label>
+              <label>Current job title or role<input name="job_title" autoComplete="organization-title" maxLength={160} required /><small>Enter your current role or “Not applicable”.</small></label>
+              <label>LinkedIn profile URL (optional)<input name="linkedin_url" type="url" maxLength={300} placeholder="https://www.linkedin.com/in/your-profile" /></label>
+              <label>Industry or sector (optional)<input name="industry" maxLength={120} /></label>
               <label>Payment amount (INR)<input name="amount" value={FEE_RUPEES} readOnly /></label>
               <label>Transaction reference (UTR)<input name="transaction" minLength={6} maxLength={80} required /></label>
               <label>Payment screenshot<input name="screenshot" type="file" accept="image/png,image/jpeg" required aria-describedby="screenshot-help" /><small id="screenshot-help">PNG or JPEG, up to 5 MB. Show the amount and transaction reference.</small></label>
             </div>
-            <label className="consent"><input type="checkbox" name="consent" required /> I agree to share these details and the screenshot with the alumni association for payment and registration review.</label>
+            <label className="consent"><input type="checkbox" name="consent" required /> I agree to share these details and the screenshot with the alumni association to maintain alumni records and review my registration and payment.</label>
             <Button className="header-join" disabled={submitting || Boolean(application.reference)}>{submitting ? "Submitting…" : "Submit for verification"} <ArrowRight aria-hidden="true" /></Button>
           </fieldset>
           <div className="form-feedback" role="status">

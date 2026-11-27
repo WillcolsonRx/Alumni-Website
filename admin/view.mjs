@@ -11,7 +11,9 @@ function showDate(value) {
 function registration(row) {
   const reference = escape(row.reference);
   return `<tr>
-    <td><strong>${escape(row.name)}</strong><small>${escape(row.email)}</small></td>
+    <td><strong>${escape(row.name)}</strong><small>${escape(row.email)}</small>
+      ${row.phone ? `<small>${escape(row.phone)}</small>` : ""}
+      ${row.city || row.country ? `<small>${escape([row.city, row.country].filter(Boolean).join(", "))}</small>` : ""}</td>
     <td>${escape(row.programme)}<small>Class of ${escape(row.graduation_year)}</small></td>
     <td><strong>${currency.format(row.amount_paise / 100)}</strong><small>UTR ${escape(row.transaction_reference)}</small>
       <a href="/proof/${reference}" target="_blank" rel="noopener noreferrer">Open screenshot</a></td>
@@ -19,6 +21,10 @@ function registration(row) {
       <small>Received ${showDate(row.submitted_at)} IST</small>
       ${row.reviewed_at ? `<small>Reviewed ${showDate(row.reviewed_at)} IST</small>` : ""}</td>
     <td><details><summary>${row.status === "pending" ? "Review" : "Details"}</summary>
+      ${row.employer ? `<small>Employer or organization</small>${escape(row.employer)}` : ""}
+      ${row.job_title ? `<small>Job title or role</small>${escape(row.job_title)}` : ""}
+      ${row.industry ? `<small>Industry or sector</small>${escape(row.industry)}` : ""}
+      ${row.linkedin_url ? `<small>LinkedIn profile</small>${escape(row.linkedin_url)}` : ""}
       <small>Registration reference</small><code>${reference}</code>
       ${row.status === "pending" ? `<form method="post" action="/review" class="review">
         <input type="hidden" name="reference" value="${reference}">
