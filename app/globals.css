@@ -161,7 +161,7 @@ main { background: radial-gradient(ellipse at 85% 58%, #0f2848, var(--night) 64%
 .application-form h3 { font-size: 31px; margin-bottom: 20px; }
 .form-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .form-fields label, .status-form > label { display: grid; gap: 7px; font-size: 14px; font-weight: 700; }
-.form-fields input, .status-form input {
+.form-fields input, .form-fields select, .form-fields textarea, .status-form input {
   border: 1px solid var(--color-input);
   border-radius: 9px;
   background: var(--night);

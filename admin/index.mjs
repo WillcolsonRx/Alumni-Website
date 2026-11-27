@@ -38,15 +38,16 @@ export default {
     const url = new URL(request.url);
     const db = env.REGISTRATIONS.withSession("first-primary");
     try {
-      const proof = url.pathname.match(/^\/proof\/([a-f0-9]{32})$/);
+      const proof = url.pathname.match(/^\/(proof|photo)\/([a-f0-9]{32})$/);
       if (request.method === "GET" && proof) {
-        const row = await db.prepare("SELECT screenshot_key FROM registrations WHERE reference = ?")
-          .bind(proof[1]).first();
-        if (!row) return response("Screenshot unavailable.", 404);
-        const object = await env.SCREENSHOTS.get(row.screenshot_key);
-        if (!object) return response("Screenshot unavailable.", 404);
+        const row = await db.prepare("SELECT screenshot_key, profile_photo_key FROM registrations WHERE reference = ?")
+          .bind(proof[2]).first();
+        const key = proof[1] === "photo" ? row?.profile_photo_key : row?.screenshot_key;
+        if (!key) return response("Image unavailable.", 404);
+        const object = await env.SCREENSHOTS.get(key);
+        if (!object) return response("Image unavailable.", 404);
         return response(object.body, 200, {
-          "Content-Type": row.screenshot_key.endsWith(".png") ? "image/png" : "image/jpeg",
+          "Content-Type": key.endsWith(".png") ? "image/png" : "image/jpeg",
           "Content-Disposition": "inline",
         });
       }
@@ -77,7 +78,9 @@ export default {
         db.prepare("SELECT status, COUNT(*) AS total FROM registrations GROUP BY status"),
         db.prepare(`SELECT reference, name, email, programme, graduation_year, transaction_reference,
                     amount_paise, status, submitted_at, reviewed_at,
-                    phone, city, country, employer, job_title, linkedin_url, industry
+                    phone, city, country, employer, job_title, linkedin_url, industry,
+                    gender, department, enrollment_number, admission_year, thesis_title,
+                    profile_photo_key IS NOT NULL AS has_profile_photo
                     FROM registrations
                     WHERE (?1 = '' OR status = ?1) AND
                           (?2 = '' OR instr(lower(name), lower(?2)) OR instr(lower(email), lower(?2))

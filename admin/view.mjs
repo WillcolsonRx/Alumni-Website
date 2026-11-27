@@ -12,6 +12,8 @@ function registration(row) {
   const reference = escape(row.reference);
   return `<tr>
     <td><strong>${escape(row.name)}</strong><small>${escape(row.email)}</small>
+      ${row.gender ? `<small>${escape(row.gender)}</small>` : ""}
+      ${row.has_profile_photo ? `<a href="/photo/${reference}" target="_blank" rel="noopener noreferrer">Open profile photo</a>` : ""}
       ${row.phone ? `<small>${escape(row.phone)}</small>` : ""}
       ${row.city || row.country ? `<small>${escape([row.city, row.country].filter(Boolean).join(", "))}</small>` : ""}</td>
     <td>${escape(row.programme)}<small>Class of ${escape(row.graduation_year)}</small></td>
@@ -25,6 +27,10 @@ function registration(row) {
       ${row.job_title ? `<small>Job title or role</small>${escape(row.job_title)}` : ""}
       ${row.industry ? `<small>Industry or sector</small>${escape(row.industry)}` : ""}
       ${row.linkedin_url ? `<small>LinkedIn profile</small>${escape(row.linkedin_url)}` : ""}
+      ${row.department ? `<small>Department</small>${escape(row.department)}` : ""}
+      ${row.enrollment_number ? `<small>Enrollment or roll number</small>${escape(row.enrollment_number)}` : ""}
+      ${row.admission_year ? `<small>Year of admission</small>${escape(row.admission_year)}` : ""}
+      ${row.thesis_title ? `<small>Thesis or dissertation</small>${escape(row.thesis_title)}` : ""}
       <small>Registration reference</small><code>${reference}</code>
       ${row.status === "pending" ? `<form method="post" action="/review" class="review">
         <input type="hidden" name="reference" value="${reference}">

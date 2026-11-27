@@ -1,4 +1,4 @@
-import { FEE_RUPEES, MAX_SCREENSHOT_BYTES } from "../lib/registration.mjs";
+import { FEE_RUPEES, GENDER_OPTIONS, MAX_PROFILE_PHOTO_BYTES, MAX_SCREENSHOT_BYTES } from "../lib/registration.mjs";
 
 const referencePattern = /^[a-f0-9]{32}$/;
 const statuses = {
@@ -137,22 +137,54 @@ async function register(data, env, ctx) {
   const existing = await findExisting();
   if (existing) return response(statuses[existing.status], 200, { reference });
 
+  const gender = field(data, "gender");
+  const department = field(data, "department");
+  const enrollment = field(data, "enrollment_number");
+  const admissionYear = Number(field(data, "admission_year"));
+  const thesis = field(data, "thesis_title");
+  const photo = data.get("profile_photo");
+  if (!GENDER_OPTIONS.includes(gender) || !department || department.length > 120 ||
+      !enrollment || enrollment.length > 80 || !Number.isInteger(admissionYear) ||
+      admissionYear < 2008 || admissionYear > year || !thesis || thesis.length > 500) {
+    return response("Check your gender and NIPER academic details. Admission year must be on or before graduation year.", 400);
+  }
+  if (!(photo instanceof File) || !photo.size || photo.size > MAX_PROFILE_PHOTO_BYTES) {
+    return response("Upload a recent profile photo as PNG or JPEG, up to 2 MB.", 400);
+  }
+  const photoBytes = await photo.arrayBuffer();
+  const photoType = imageType(new Uint8Array(photoBytes, 0, Math.min(photoBytes.byteLength, 8)));
+  if (!photoType || photo.type !== `image/${photoType}`) {
+    return response("Upload a PNG or JPEG profile photo.", 400);
+  }
+
   const key = `payments/${crypto.randomUUID()}.${type}`;
-  await env.SCREENSHOTS.put(key, bytes, { httpMetadata: { contentType: `image/${type}` } });
+  const photoKey = `profiles/${crypto.randomUUID()}.${photoType}`;
+  const uploads = await Promise.allSettled([
+    env.SCREENSHOTS.put(key, bytes, { httpMetadata: { contentType: `image/${type}` } }),
+    env.SCREENSHOTS.put(photoKey, photoBytes, { httpMetadata: { contentType: `image/${photoType}` } }),
+  ]);
+  const cleanUploads = () => env.SCREENSHOTS.delete([key, photoKey])
+    .catch(() => console.error("Registration upload cleanup failed"));
+  if (uploads.some(({ status }) => status === "rejected")) {
+    ctx.waitUntil(cleanUploads());
+    throw new Error("Registration upload failed");
+  }
   // Keep the object if the database outcome is unknown. A committed row may use it.
   const result = await db.prepare(`
     INSERT INTO registrations
       (reference, name, email, programme, graduation_year, amount_paise, transaction_reference, screenshot_key,
-       phone, city, country, employer, job_title, linkedin_url, industry)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING
+       phone, city, country, employer, job_title, linkedin_url, industry,
+       gender, profile_photo_key, department, enrollment_number, admission_year, thesis_title)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING
   `).bind(reference, name, email, programme, year, FEE_RUPEES * 100, transaction, key,
-    phone, city, country, employer, jobTitle, linkedinUrl || null, industry || null).run();
+    phone, city, country, employer, jobTitle, linkedinUrl || null, industry || null,
+    gender, photoKey, department, enrollment, admissionYear, thesis).run();
   if (result.meta.changes === 1) {
     ctx.waitUntil(sendReceipt(env, email, reference));
     return response(statuses.pending, 201, { reference });
   }
 
-  ctx.waitUntil(env.SCREENSHOTS.delete(key).catch(() => console.error("Screenshot cleanup failed")));
+  ctx.waitUntil(cleanUploads());
   const existingAfterInsert = await findExisting();
   if (existingAfterInsert) return response(statuses[existingAfterInsert.status], 200, { reference });
   return response("A registration already uses these details. Use your private reference or contact the association.", 409);
@@ -176,7 +208,7 @@ const worker = {
     }
 
     try {
-      const form = await readForm(request, registration ? MAX_SCREENSHOT_BYTES + 65536 : 8192);
+      const form = await readForm(request, registration ? MAX_SCREENSHOT_BYTES + MAX_PROFILE_PHOTO_BYTES + 65536 : 8192);
       if (!form) return response("The form is invalid or exceeds the upload limit.", 400);
       if (registration) return await register(form, env, ctx);
 
