@@ -78,3 +78,13 @@ For the sender, enter an address on the verified domain, optionally in the forma
 are required to enable email. The Worker saves registrations even when email is
 disabled or the provider rejects a send. Delivery failures appear in Worker
 logs and the email provider dashboard.
+
+## Staff portal
+
+The staff dashboard is a separate Cloudflare Worker in `admin/`. It uses the
+same D1 and private R2 bindings. Deploy it with
+`npx wrangler deploy --config admin/wrangler.jsonc` and set a long, randomly
+generated password with `npx wrangler secret put ADMIN_PASSWORD --config admin/wrangler.jsonc`.
+Sign in with the username `alumni-admin` using the browser's sign-in prompt.
+Rotate the Worker secret to change the password. Close the browser session
+after reviewing registrations on a shared computer.

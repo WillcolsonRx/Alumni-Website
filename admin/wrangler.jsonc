@@ -1,0 +1,17 @@
+{
+  "name": "niper-raebareli-alumni-admin",
+  "account_id": "c4a7d1ab3e6e09de3151b1df9815d6d3",
+  "main": "index.mjs",
+  "compatibility_date": "2026-11-26",
+  "workers_dev": true,
+  "preview_urls": false,
+  "d1_databases": [{
+    "binding": "REGISTRATIONS",
+    "database_name": "niper-alumni-registrations",
+    "database_id": "86c4efe2-3395-40f6-86d4-f98da55ae7be"
+  }],
+  "r2_buckets": [{
+    "binding": "SCREENSHOTS",
+    "bucket_name": "niper-alumni-payment-screenshots"
+  }]
+}
